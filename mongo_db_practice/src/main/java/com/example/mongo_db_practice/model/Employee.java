@@ -1,10 +1,14 @@
 package com.example.mongo_db_practice.model;
 
+import jakarta.persistence.JoinColumn;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class represents an Employee in the system.
@@ -25,4 +29,7 @@ public class Employee {
 
     String department;
     String position;
+
+    private List<Attendance> attendances = new ArrayList<>();
+
 }

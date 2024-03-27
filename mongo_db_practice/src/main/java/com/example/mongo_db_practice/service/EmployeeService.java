@@ -1,9 +1,12 @@
 package com.example.mongo_db_practice.service;
 
+import com.example.mongo_db_practice.model.Attendance;
 import com.example.mongo_db_practice.model.Employee;
 import com.example.mongo_db_practice.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -42,5 +45,24 @@ public class EmployeeService {
 
     public Employee getEmployeeByName(String name) {
         return employeeRepository.findByName(name);
+    }
+
+
+
+
+    public Duration calculateTotalDutyTime(Employee employee) {
+        if (employee == null) {
+            throw new RuntimeException("Employee not found");
+        }
+        List<Attendance> attendances = employee.getAttendances();
+        if (attendances == null) {
+            throw new RuntimeException("No attendances found for the employee");
+        }
+        Duration totalDutyTime = Duration.ZERO;
+        for (Attendance attendance : attendances) {
+            Duration dutyTime = Duration.between(attendance.getIn_time(), attendance.getOut_time());
+            totalDutyTime = totalDutyTime.plus(dutyTime);
+        }
+        return totalDutyTime;
     }
 }
