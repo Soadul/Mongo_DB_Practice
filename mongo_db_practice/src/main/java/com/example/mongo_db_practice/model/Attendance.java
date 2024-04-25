@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Document
 @Data
@@ -39,6 +41,9 @@ public class Attendance {
     private LocalTime in_time;
     private LocalTime out_time;
 
-    @DBRef
-    private Employee employee;
+//    @DBRef
+//    private Employee employee;
+
+    private String employeeId; // New field
+
 }

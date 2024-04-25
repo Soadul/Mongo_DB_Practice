@@ -2,59 +2,40 @@ package com.example.mongo_db_practice.service;
 
 import com.example.mongo_db_practice.model.Attendance;
 import com.example.mongo_db_practice.model.Employee;
+import com.example.mongo_db_practice.repository.AttendanceRepository;
 import com.example.mongo_db_practice.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.time.LocalTime;
+import java.time.YearMonth;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
-
-/**
- * EmployeeService class.
- * This class provides services related to Employee operations.
- */
 
 @Service
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
+    private final AttendanceRepository attendanceRepository;
 
-    /**
-     * EmployeeService constructor.
-     * @param employeeRepository the repository to interact with the database
-     */
-    public EmployeeService(EmployeeRepository employeeRepository) {
+    public EmployeeService(EmployeeRepository employeeRepository, AttendanceRepository attendanceRepository) {
         this.employeeRepository = employeeRepository;
+        this.attendanceRepository = attendanceRepository;
     }
 
-    /**
-     * Method to create a new Employee.
-     * @param employee the Employee object to be saved
-     * @return the saved Employee object
-     */
     public Employee createEmployee(Employee employee) {
         return employeeRepository.save(employee);
     }
 
-    /**
-     * Method to get all Employees.
-     * @return a list of all Employee objects
-     */
     public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
     }
 
-    public Employee getEmployeeByName(String name) {
-        return employeeRepository.findByName(name);
+    public String getEmployeeByName(String name) {
+        return employeeRepository.findByName(name).getEmployee_id();
     }
 
-
-
-
-    public Duration calculateTotalDutyTime(Employee employee) {
-        if (employee == null) {
-            throw new RuntimeException("Employee not found");
-        }
-        List<Attendance> attendances = employee.getAttendances();
+    public Duration calculateTotalDutyTime(String employeeId) {
+        List<Attendance> attendances = attendanceRepository.findByEmployeeId(employeeId);
         if (attendances == null) {
             throw new RuntimeException("No attendances found for the employee");
         }
@@ -65,4 +46,24 @@ public class EmployeeService {
         }
         return totalDutyTime;
     }
+
+
+    public Duration calculateMonthlyDutyTime(String employeeId, int month, int year) {
+
+        List<Attendance> attendances = attendanceRepository.findByEmployeeId(employeeId);
+        if (attendances == null) {
+            throw new RuntimeException("No attendances found for the employee");
+        }
+        YearMonth yearMonth = YearMonth.of(year, month);
+        Duration totalDutyTime = Duration.ZERO;
+        for (Attendance attendance : attendances) {
+            if (attendance.getDate().atStartOfDay(ZoneId.systemDefault()).toLocalDate().getMonthValue() == month &&
+                    attendance.getDate().atStartOfDay(ZoneId.systemDefault()).toLocalDate().getYear() == year) {
+                Duration dutyTime = Duration.between(attendance.getIn_time(), attendance.getOut_time());
+                totalDutyTime = totalDutyTime.plus(dutyTime);
+            }
+        }
+        return totalDutyTime;
+    }
+
 }

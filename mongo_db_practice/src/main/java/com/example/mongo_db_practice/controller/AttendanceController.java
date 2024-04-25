@@ -26,7 +26,7 @@ public class AttendanceController {
 
     @PostMapping("/attendance")
     public Attendance createAttendance(@RequestBody Map<String, Object> body) {
-        String employeeId = ((Map<String, String>) body.get("employee")).get("$id");
+        String employeeId = (String) body.get("employeeId");
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
@@ -34,7 +34,7 @@ public class AttendanceController {
         attendance.setDate(LocalDate.parse((String) body.get("date")));
         attendance.setIn_time(LocalTime.parse((String) body.get("in_time")));
         attendance.setOut_time(LocalTime.parse((String) body.get("out_time")));
-        attendance.setEmployee(employee);
+        attendance.setEmployeeId(employeeId); // Set employeeId
 
         return attendanceRepository.save(attendance);
     }
