@@ -66,4 +66,20 @@ public class EmployeeService {
         return totalDutyTime;
     }
 
+    //This method is for update employee by id
+    public Employee updateEmployee(String id, Employee updatedEmployee) {
+        return employeeRepository.findById(id)
+                .map(employee -> {
+                    employee.setName(updatedEmployee.getName());
+                    employee.setDepartment(updatedEmployee.getDepartment());
+                    employee.setPosition(updatedEmployee.getPosition());
+                    // update other fields as necessary
+                    return employeeRepository.save(employee);
+                })
+                .orElseThrow(() -> new RuntimeException("Employee not found with id " + id));
+    }
+//This method is for delete employee by id
+    public void deleteEmployee(String id) {
+        employeeRepository.deleteById(id);
+    }
 }

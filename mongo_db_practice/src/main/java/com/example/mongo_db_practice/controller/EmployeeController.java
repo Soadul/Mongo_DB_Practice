@@ -12,7 +12,8 @@ import java.time.Duration;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 
 @RequestMapping("/employees")
 
@@ -42,6 +43,17 @@ public class EmployeeController {
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 
+    //This Method is for update employee
+    @PutMapping("/update/{id}")
+    public Employee updateEmployee(@PathVariable String id , @RequestBody Employee updatedEmployee) {
+        return employeeService.updateEmployee(id, updatedEmployee);
+    }
+
+    //This Method will delete employee
+    @DeleteMapping("/delete/{id}")
+    public void deleteEmployee(@PathVariable String id) {
+        employeeService.deleteEmployee(id);
+    }
     // Assuming you have a method in EmployeeService to get an employee by name
     @GetMapping("/search/{name}")
     public String getEmployeeByName(@PathVariable String name) {
